@@ -1,0 +1,10 @@
+#code_snippet {
+    width: 50vw;
+    border: solid 1px gray;
+}
+
+#code_snippet_textarea {
+    height: 20vh;
+    width: 50vw;
+    border: solid 1px gray;
+}

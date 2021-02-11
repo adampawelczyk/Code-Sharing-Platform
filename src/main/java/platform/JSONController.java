@@ -1,32 +1,41 @@
 package platform;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Map;
+import java.util.ArrayList;
 
 @Controller
 public class JSONController {
-    @GetMapping(path = "/api/code")
-    public ResponseEntity<Map<String, String>> getJSON() {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Content-Type", "application/json");
+    @Autowired
+    CodeSnippetService codeSnippetService;
 
-        return ResponseEntity.ok().headers(responseHeaders).body(CodeSnippet.getJsonCode());
+    @GetMapping(path = "/api/code/{id}")
+    public ResponseEntity<CodeSnippet> getCode(@PathVariable int id) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("Content-Type", "application/json");
+        return ResponseEntity.ok().headers(httpHeaders).body(codeSnippetService.findById(id));
     }
 
     @PostMapping(value = "/api/code/new", consumes = "application/json")
-    public ResponseEntity<String> apiCreate(@RequestBody Code code) {
+    public ResponseEntity<String> newCode(@RequestBody CodeSnippet codeSnippet) {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.set("Content-Type", "application/json");
+        codeSnippetService.save(codeSnippet);
+        String response = String.format("{\"id\": \"%s\"}", codeSnippetService.count());
+        return ResponseEntity.ok().headers(httpHeaders).body(response);
+    }
+
+    @GetMapping(value = "/api/code/latest")
+    public ResponseEntity<ArrayList<CodeSnippet>> getLatest() {
         HttpHeaders responseHeaders = new HttpHeaders();
         responseHeaders.set("Content-Type", "application/json");
-
-        CodeSnippet.setCode(code.getCode());
-        CodeSnippet.setDateTime(code.getLocalDateTime());
-
-        return ResponseEntity.ok().headers(responseHeaders).body("{}");
+        return ResponseEntity.ok().headers(responseHeaders).body(codeSnippetService.getLatest());
     }
 }

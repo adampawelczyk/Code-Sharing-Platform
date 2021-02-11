@@ -1,55 +1,30 @@
 package platform;
 
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 public class HTMLController {
-    @GetMapping(path = "/code")
-    public ResponseEntity<String> getHTML() {
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Content-Type", "text/html");
+    @Autowired
+    CodeSnippetService codeSnippetService;
 
-        return ResponseEntity.ok().headers(responseHeaders).body(CodeSnippet.getHTMLCode());
+    @GetMapping(path = "/code/{id}")
+    public String getCode(Model model, @PathVariable int id) {
+        model.addAttribute("codeSnippet", codeSnippetService.findById(id));
+        return "code";
     }
 
     @GetMapping(path = "/code/new")
-    public ResponseEntity<String> create() {
-        String html = "<!DOCTYPE html>\n" +
-                "<html lang=\"en\">\n" +
-                "<head>\n" +
-                "<script>" +
-                "function send() {\n" +
-                "    let object = {\n" +
-                "        \"code\": document.getElementById(\"code_snippet\").value\n" +
-                "    };\n" +
-                "    \n" +
-                "    let json = JSON.stringify(object);\n" +
-                "    \n" +
-                "    let xhr = new XMLHttpRequest();\n" +
-                "    xhr.open(\"POST\", '/api/code/new', false)\n" +
-                "    xhr.setRequestHeader('Content-type', 'application/json; charset=utf-8');\n" +
-                "    xhr.send(json);\n" +
-                "    \n" +
-                "    if (xhr.status == 200) {\n" +
-                "      alert(\"Success!\");\n" +
-                "    }\n" +
-                "}" +
-                "</script>" +
-                "   <meta charset=\"UTF-8\">\n" +
-                "   <title>Create</title>\n" +
-                "</head>\n" +
-                "<body>\n" +
-                "   <textarea id=\"code_snippet\"></textarea>\n" +
-                "   <button id=\"send_snippet\" type=\"submit\" onclick=\"send()\">Submit</button>" +
-                "</body>\n" +
-                "</html>";
+    public String newCode() {
+        return "new";
+    }
 
-        HttpHeaders responseHeaders = new HttpHeaders();
-        responseHeaders.set("Content-Type", "text/html");
-
-        return ResponseEntity.ok().headers(responseHeaders).body(html);
+    @GetMapping(path = "code/latest")
+    public String latest(Model model) {
+        model.addAttribute("codeSnippets", codeSnippetService.getLatest());
+        return "latest";
     }
 }

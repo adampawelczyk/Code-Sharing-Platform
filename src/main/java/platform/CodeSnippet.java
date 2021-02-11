@@ -1,50 +1,39 @@
 package platform;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
+@Entity
 public class CodeSnippet {
-    private static String code = "public static void main(String[] args) {" +
-            "SpringApplication.run(CodeSharingPlatform.class, args);}";
-    private static String dateTime = "2021-02-03 14:44:37";
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+    private String code;
+    private String date;
 
-    public static String getHTMLCode() {
-        return "<html>\n" +
-                "   <head>\n" +
-                "       <title>Code</title>\n" +
-                "       <style>" +
-                "           pre {" +
-                "               background-color: lightgray;" +
-                "               margin: 10px 10px 10px 10px;" +
-                "               border: 2px solid gray;" +
-                "               padding: 5px 5px 5px 5px;" +
-                "           }" +
-                "           span {" +
-                "               color: green;" +
-                "           }" +
-                "       </style>" +
-                "   </head>\n" +
-                "   <body>\n" +
-                "       <span id=\"load_date\">" + dateTime + "</span>\n" +
-                "       <pre id=\"code_snippet\">\n" +
-                "           " + code +"\n" +
-                "       </pre>\n" +
-                "   </body>\n" +
-                "</html>";
+    public CodeSnippet(String code, String date) {
+        this.code = code;
+        this.date = date;
     }
 
-    public static Map<String, String> getJsonCode() {
-        Map<String, String> map = new HashMap<>();
-        map.put("code", code);
-        map.put("date", dateTime);
-        return map;
+    public CodeSnippet() {
+        date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
-    public static void setCode(String code) {
-        CodeSnippet.code = code;
+    public String getCode() {
+        return code;
     }
 
-    public static void setDateTime(String dateTime) {
-        CodeSnippet.dateTime = dateTime;
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }
